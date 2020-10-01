@@ -67,7 +67,7 @@ $(GOMPLATE):
 	@chmod +x $(GOMPLATE)
 	@$(OK) installing gomplate $(HOSTOS)-$(HOSTARCH)
 
-kind.up: $(KIND)
+kind.up: local.prepare $(KIND)
 	@$(INFO) kind up
 	@$(KIND) get kubeconfig --name $(KIND_CLUSTER_NAME) >/dev/null 2>&1 || $(KIND) create cluster --name=$(KIND_CLUSTER_NAME) --config="$(KIND_CONFIG_FILE)" --kubeconfig="$(KUBECONFIG)"
 	@$(KIND) get kubeconfig --name $(KIND_CLUSTER_NAME) > $(DEPLOY_LOCAL_KUBECONFIG)
@@ -111,9 +111,9 @@ local.clean:
 	@$(OK) cleaning local dev workdir
 
 ifeq ($(USE_HELM3),true)
-local.up: local.prepare kind.up
+local.up: kind.up
 else
-local.up: local.prepare kind.up local.helminit
+local.up: kind.up local.helminit
 endif
 
 local.down: kind.down local.clean
